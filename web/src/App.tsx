@@ -44,7 +44,7 @@ type BatchData = {
 function isStaleBatchFile(b: BatchData | null): boolean {
   if (!b?.rows?.length) return false
   if (b.enrich_status === 'prices_incomplete') return true
-  if (b.enrich_status !== undefined && b.enrich_status !== 'prices_incomplete') return false
+  if (b.enrich_status !== undefined) return false
   if (b.batch_schema_version != null && b.batch_schema_version >= 2) return false
   const r = b.rows[0]
   return r.last_close === undefined

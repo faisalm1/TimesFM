@@ -264,3 +264,34 @@ def rebuild_ranking():
             "message": "Refreshing rankings in the background. This may take several minutes.",
         },
     )
+
+
+# Built React app (npm run build in web/) — same origin as /api/* on VPS.
+_DIST = ROOT / "web" / "dist"
+
+
+def _mount_dashboard_if_present() -> None:
+    if not _DIST.is_dir() or not (_DIST / "index.html").is_file():
+        return
+    from fastapi.staticfiles import StaticFiles
+    from starlette.responses import FileResponse
+
+    assets = _DIST / "assets"
+    if assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(assets)), name="dashboard_assets")
+
+    @app.get("/")
+    def _dashboard_index():
+        return FileResponse(_DIST / "index.html")
+
+    @app.get("/{catch_all:path}")
+    def _dashboard_spa(catch_all: str):
+        if catch_all.startswith("api"):
+            raise HTTPException(status_code=404)
+        candidate = _DIST / catch_all
+        if candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(_DIST / "index.html")
+
+
+_mount_dashboard_if_present()

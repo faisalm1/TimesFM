@@ -11,4 +11,4 @@ data/latest_ranking.json
 data/ml_artifacts/
 *.log
 web/node_modules/
-web/dist/
+# web/dist/ is committed so VPS can `git pull` and serve UI without Node
