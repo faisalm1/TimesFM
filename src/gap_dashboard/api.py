@@ -286,7 +286,7 @@ def _mount_dashboard_if_present() -> None:
 
     @app.get("/{catch_all:path}")
     def _dashboard_spa(catch_all: str):
-        if catch_all.startswith("api"):
+        if catch_all.startswith("api") or catch_all in ("docs", "redoc", "openapi.json"):
             raise HTTPException(status_code=404)
         candidate = _DIST / catch_all
         if candidate.is_file():
