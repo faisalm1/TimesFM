@@ -1,0 +1,74 @@
+Metadata-Version: 2.4
+Name: us-stock-gap-dashboard
+Version: 0.1.0
+Summary: TimesFM + Alpaca: overnight gap risk dashboard (close→next open, 5 trading days).
+Requires-Python: <3.12,>=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.24
+Requires-Dist: pandas>=2.0
+Requires-Dist: pyarrow>=14.0
+Requires-Dist: streamlit>=1.28
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: alpaca-py>=0.21.0
+Requires-Dist: pytz>=2024.1
+Requires-Dist: torch>=2.1
+Requires-Dist: timesfm>=1.2.0
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: uvicorn[standard]>=0.32.0
+Provides-Extra: dev
+Requires-Dist: ruff>=0.4.0; extra == "dev"
+
+# TimesFM overnight gap dashboard (faisalm1)
+
+**Primary UI:** React (Vite) + **FastAPI** backend. Alpaca keys live only in **`.env`** on the Python process; the browser talks to `/api/*` and never sees secrets.
+
+Optional Streamlit UI remains in `src/gap_dashboard/app.py` if you need it.
+
+## Setup
+
+```powershell
+cd "C:\Users\User\Desktop\Cursor 2026\faisalm1\TimesFM"
+python -m venv .venv
+.\.venv\Scripts\pip install -e ".[dev]"
+copy .env.example .env
+# put APCA_API_KEY_ID and APCA_API_SECRET_KEY in .env (not in the React app)
+cd web
+npm install
+```
+
+## Run locally (two terminals)
+
+**Terminal 1 — API (loads `.env`, TimesFM, Alpaca):**
+
+```powershell
+cd "C:\Users\User\Desktop\Cursor 2026\faisalm1\TimesFM"
+.\.venv\Scripts\python -m uvicorn gap_dashboard.api:app --app-dir src --reload --host 127.0.0.1 --port 8000
+```
+
+**Terminal 2 — React (proxies `/api` → :8000):**
+
+```powershell
+cd "C:\Users\User\Desktop\Cursor 2026\faisalm1\TimesFM\web"
+npm run dev
+```
+
+Open the URL Vite prints (usually `http://localhost:5173`). API docs: `http://127.0.0.1:8000/docs`.
+
+## Optional: Streamlit
+
+```powershell
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\streamlit run src/gap_dashboard/app.py
+```
+
+## Model
+
+First run may download `google/timesfm-1.0-200m-pytorch` from Hugging Face. Optional: `TIMESFM_CUDA=1` for GPU.
+
+## GSD
+
+Get Shit Done is under `.cursor/` (`npx get-shit-done-cc@latest --cursor --local`).
+
+## Disclaimer
+
+Not financial advice. Validate with your own backtests. Historical bars cache under `data/cache/`.

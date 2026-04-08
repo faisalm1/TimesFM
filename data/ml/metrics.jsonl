@@ -1,0 +1,1 @@
+{"timestamp": "2026-04-07T19:31:15.590807", "n_total": 452393, "n_train": 361914, "n_val": 90479, "roc_auc_val": 0.8327558723000833, "precision_val_0p5": 0.08191620233012518, "recall_val_0p5": 0.5817060637204522, "label": ">=10.0% max overnight gap within 5 sessions (realized)", "features": "causal OHLCV/gap stats only; no lookahead"}

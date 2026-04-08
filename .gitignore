@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.env
+data/cache/*.parquet
+data/cache/*.json
+data/latest_ranking.json
+data/ml_artifacts/
+*.log
+web/node_modules/
+web/dist/
