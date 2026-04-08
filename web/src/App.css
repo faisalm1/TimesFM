@@ -330,6 +330,41 @@ body {
   font-size: 0.88rem;
 }
 
+.first-run-card {
+  margin-bottom: 1rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface-solid);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+  max-width: 42rem;
+}
+
+.first-run-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-up);
+}
+
+.first-run-body {
+  margin: 0 0 1rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.first-run-body strong {
+  color: var(--text);
+}
+
+.first-run-status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #a7f3d0;
+  line-height: 1.5;
+}
+
 .banner-info {
   display: flex;
   flex-direction: column;

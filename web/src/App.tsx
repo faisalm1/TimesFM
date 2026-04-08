@@ -132,6 +132,8 @@ export default function App() {
   const [batch, setBatch] = useState<BatchData | null>(null)
   const [batchLoading, setBatchLoading] = useState(false)
   const [batchErr, setBatchErr] = useState<string | null>(null)
+  /** True when /api/latest returns 404 — no file on server yet */
+  const [needsFirstBatch, setNeedsFirstBatch] = useState(false)
   const [rebuilding, setRebuilding] = useState(false)
   const [search, setSearch] = useState('')
   const [minScore, setMinScore] = useState(0)
@@ -184,7 +186,16 @@ export default function App() {
       if (!opts?.silent) setBatchErr(null)
       try {
         const res = await fetch('/api/latest')
+        if (res.status === 404) {
+          setBatch(null)
+          setNeedsFirstBatch(true)
+          setBatchErr(null)
+          const st = await fetch('/api/rebuild-ranking/status').then((r) => r.json() as Promise<{ running?: boolean }>)
+          if (st.running) setRebuilding(true)
+          return
+        }
         if (!res.ok) throw new Error(await res.text())
+        setNeedsFirstBatch(false)
         const d: BatchData = enrichBatchData(await res.json())
         setBatch(d)
       } catch (e) {
@@ -219,6 +230,7 @@ export default function App() {
         const t = await res.text()
         throw new Error(t || res.statusText)
       }
+      setNeedsFirstBatch(false)
       setRebuilding(true)
       window.setTimeout(() => loadBatch({ silent: true }), 4000)
     } catch (e) {
@@ -421,6 +433,25 @@ export default function App() {
         </aside>
 
         <main className="main-col">
+          {dataTab === 'batch' && needsFirstBatch && (
+            <div className="first-run-card">
+              <h2 className="first-run-title">First-time setup</h2>
+              <p className="first-run-body">
+                The server is online. Full rankings are built in the background — often <strong>30–90+ minutes</strong> the
+                first time. You can leave this page; work continues on the server.
+              </p>
+              {rebuilding ? (
+                <p className="first-run-status">
+                  <strong>Building now…</strong> Use <strong>Reload batch</strong> in the sidebar every few minutes until
+                  tables appear.
+                </p>
+              ) : (
+                <button type="button" className="btn btn-primary" onClick={() => void startRebuild()}>
+                  Start building rankings
+                </button>
+              )}
+            </div>
+          )}
           {dataTab === 'batch' && batchErr && <div className="banner-error">{batchErr}</div>}
           {dataTab === 'batch' && batch && gapDownInfoBannerShown(batch) && (
             <div className="banner-info">
